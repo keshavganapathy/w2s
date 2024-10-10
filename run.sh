@@ -1,4 +1,5 @@
 # export CUDA_VISIBLE_DEVICES=0,1,2,3
+export CUDA_VISIBLE_DEVICES=0
 
 accelerate launch --num_processes=4 --num_machines=1 --mixed_precision=bf16 --dynamo_backend=no main.py\
     --model_name="EleutherAI/pythia-70m-deduped"\

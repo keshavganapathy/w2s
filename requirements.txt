@@ -1,0 +1,10 @@
+# Python version requirement
+python_version == "3.11"
+
+# Other packages
+transformers
+accelerate
+datasets
+trl
+peft
+scikit-learn
