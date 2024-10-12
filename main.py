@@ -1,6 +1,7 @@
 import os
 import warnings
 from dataclasses import dataclass, field
+from typing import Optional
 import torch
 from datetime import timedelta
 from transformers import HfArgumentParser
@@ -29,16 +30,10 @@ class ScriptArguments:
     is_easy_to_hard: bool = field(
         default=False, metadata={"help": "Whether to use easy-to-hard sampling"}
     )
-    num_epochs: int = field(default=10, metadata={"help": "Number of training epochs"})
-    learning_rate: float = field(
-        default=5e-5, metadata={"help": "Learning rate for training"}
-    )
-    train_batch_size: int = field(
-        default=8, metadata={"help": "Batch size for training"}
-    )
-    pred_batch_size: int = field(
-        default=8, metadata={"help": "Batch size for prediction"}
-    )
+    # Never used for now
+    # pred_batch_size: int = field(
+    #     default=8, metadata={"help": "Batch size for prediction"}
+    # )
     num_proc: int = field(
         default=4, metadata={"help": "Number of processes for data loading"}
     )
@@ -58,6 +53,9 @@ class ScriptArguments:
     )
     temp_folder: str = field(
         default="/tmp/w2s", metadata={"help": "Temporary folder path"}
+    )
+    config_file: Optional[str] = field(
+        default=None, metadata={"help": "Path to the training configuration JSON file"}
     )
 
 
