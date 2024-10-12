@@ -4,6 +4,8 @@
 [Draft](https://www.overleaf.com/project/66e754e11c5ae7457ada36bb)
 
 ## Environment requirements
+Use python 3.11
+
 Install the packages in the `requirements.txt` file and make sure the python version is correct.
 
 Install the pytorch cuda version with the following command:
