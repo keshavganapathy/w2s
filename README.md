@@ -13,3 +13,11 @@ Load the cuda module before submit your work or you can add this in your sbatch 
 `module load cuda/11.8.0`
 
 Yihan have tested the cuda 11.8.0 works well.
+
+## Daily Log
+### Keshav
+-
+### Aakriti
+-
+### Yihan
+-
