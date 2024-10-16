@@ -16,10 +16,4 @@ Load the cuda module before submit your work or you can add this in your sbatch 
 
 Yihan have tested the cuda 11.8.0 works well.
 
-## Daily Log
-### Keshav
--
-### Aakriti
--
-### Yihan
--
+Add `#SBATCH --gres=gpu:4` in your sbatch job script to request 4 GPUs for distributed training.
