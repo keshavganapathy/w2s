@@ -36,23 +36,23 @@ def train(model_name, train_dataset, eval_dataset, sargs, accelerator, mode="wea
                 "dense",
             ],
         )
-    # elif "Qwen" in model_name:
-    #     lora_config = LoraConfig(
-    #         r=64,
-    #         lora_alpha=16,
-    #         lora_dropout=0.05,
-    #         bias="none",
-    #         task_type="CAUSAL_LM",
-    #         target_modules=[
-    #             "q_proj",
-    #             "k_proj",
-    #             "v_proj",
-    #             "o_proj",
-    #             "up_proj",
-    #             "gate_proj",
-    #             "down_proj",
-    #         ],
-    #     )
+    elif "Qwen" in model_name:
+        lora_config = LoraConfig(
+            r=64,
+            lora_alpha=16,
+            lora_dropout=0.05,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=[
+                "q_proj",
+                "k_proj",
+                "v_proj",
+                "o_proj",
+                "up_proj",
+                "gate_proj",
+                "down_proj",
+            ],
+        )
 
     if sargs.is_completion_only:
         response_template = "### Response:\n"
@@ -67,30 +67,7 @@ def train(model_name, train_dataset, eval_dataset, sargs, accelerator, mode="wea
             config_dict = json.load(f)
         training_args = TrainingArguments(**config_dict)
         training_args.output_dir = output_dir
-    # training_args = TrainingArguments(
-    #     output_dir=output_dir,
-    #     bf16=True,
-    #     evaluation_strategy="epoch",
-    #     learning_rate=sargs.learning_rate,
-    #     per_device_train_batch_size=sargs.train_batch_size,
-    #     per_device_eval_batch_size=sargs.train_batch_size // 2,
-    #     num_train_epochs=sargs.num_epochs,
-    #     logging_dir="./logs",
-    #     save_strategy="epoch",
-    #     report_to="none",
-    #     load_best_model_at_end=True,
-    #     metric_for_best_model="loss",
-    #     optim="adamw_torch",
-    #     weight_decay=0.01,
-    #     adam_beta2=0.95,
-    #     warmup_ratio=0.05,
-    #     lr_scheduler_type="cosine",
-    #     gradient_checkpointing=False,
-    #     logging_strategy="steps",
-    #     logging_steps=10,
-    #     save_total_limit=1,
-    # )
-    # 
+
     trainer = SFTTrainer(
         model=model,
         tokenizer=tokenizer,

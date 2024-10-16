@@ -79,7 +79,7 @@ def load_pretrain_model_tokenizer(sargs, accelerator, mode="weak"):
     model = AutoModelForCausalLM.from_pretrained(
         sargs.model_name,
         torch_dtype=torch.bfloat16,
-        device_map={"": accelerator.local_process_index},
+        low_cpu_mem_usage=False,
         trust_remote_code=False,
         use_cache=True,
         cache_dir="./cache",
