@@ -43,15 +43,16 @@ def train(model_name, train_dataset, eval_dataset, sargs, accelerator, mode="wea
             lora_dropout=0.05,
             bias="none",
             task_type="CAUSAL_LM",
-            target_modules=[
-                "q_proj",
-                "k_proj",
-                "v_proj",
-                "o_proj",
-                "up_proj",
-                "gate_proj",
-                "down_proj",
-            ],
+            target_modules=["c_attn", "c_proj", "w1", "w2"],
+        )
+    elif "Llama" in model_name:
+        lora_config = LoraConfig(
+            r=64,
+            lora_alpha=16,
+            lora_dropout=0.05,
+            target_modules="all-linear",
+            bias="none",
+            task_type="CAUSAL_LM",
         )
 
     if sargs.is_completion_only:
