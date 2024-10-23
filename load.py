@@ -6,15 +6,17 @@ import re
 INSTRUCTION_TEMPLATE = "### Human:\n"
 RESPONSE_TEMPLATE = "### Response:\n"
 
-# TODO: remove this line after everything debugged
 datasets.disable_caching()
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 DATASET_CONFIGS = {
     # Short response
-    "sciq": ("allenai/sciq", None, ("train", "test"), 1.0, 1.0),
-    "arc": ("allenai/ai2_arc", "ARC-Challenge", ("train", "test"), 1.0, 1.0),
+    # "sciq": ("allenai/sciq", None, ("train", "test"), 1.0, 1.0),
+    # "arc": ("allenai/ai2_arc", "ARC-Challenge", ("train", "test"), 1.0, 1.0),
+
+    "gsm8k": ("gsm8k", None, ("train", "test"), 1.0, 1.0),
+    "math": ("math", None, ("train", "test"), 1.0, 1.0)
 }
 
 DIFFICULTY_DATASET_ROOT = "Aakriti05/"
@@ -121,12 +123,27 @@ def arc_formatter_func(example):
         "target": example["choices"]["label"].index(example["answerKey"]),
     }
 
+def gsm8k_formatter_func(example):
+    question = example['question']
+    answer = example['answer']
+    return {
+        'text': INSTRUCTION_TEMPLATE + question + '\n' + RESPONSE_TEMPLATE + answer,
+    }
+
+def math_formatter_func(example):
+    question = example['problem']
+    answer = example['solution']
+    return {
+        'text': INSTRUCTION_TEMPLATE + question + '\n' + RESPONSE_TEMPLATE + answer,
+    }
 
 
 def format_dataset(dataset, dataset_name, num_proc):
     formatter_func = {
         "sciq": sciq_formatter_func,
         "arc": arc_formatter_func,
+        "gsm8k": gsm8k_formatter_func,
+        "math": math_formatter_func,
     }[dataset_name]
     dataset = dataset.map(
         formatter_func,
