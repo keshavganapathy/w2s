@@ -15,26 +15,27 @@ DATASET_CONFIGS = {
     # "sciq": ("allenai/sciq", None, ("train", "test"), 1.0, 1.0),
     # "arc": ("allenai/ai2_arc", "ARC-Challenge", ("train", "test"), 1.0, 1.0),
 
-    "gsm8k": ("gsm8k", None, ("train", "test"), 1.0, 1.0),
-    "math": ("math", None, ("train", "test"), 1.0, 1.0)
+    "gsm8k": ("gsm8k", "main", ("train", "test"), 1.0, 1.0),
+    "math": ("math_dataset", "all", ("train", "test"), 1.0, 1.0)
 }
 
 DIFFICULTY_DATASET_ROOT = "Aakriti05/"
 
 
 def load_sft_dataset(sargs):
+    dataset_config = DATASET_CONFIGS[sargs.dataset_name]
     if not sargs.is_easy_to_hard:
         dataset = load_dataset(
-            DATASET_CONFIGS[sargs.dataset_name][0],
-            name=DATASET_CONFIGS[sargs.dataset_name][1],
+            dataset_config[0],
+            name=dataset_config[1],
             cache_dir="./cache",
         )
         train_dataset, eval_dataset = (
-            dataset[DATASET_CONFIGS[sargs.dataset_name][2][0]],
-            dataset[DATASET_CONFIGS[sargs.dataset_name][2][1]],
+            dataset[dataset_config[2][0]],
+            dataset[dataset_config[2][1]],
         )
         dataset_splits = train_dataset.train_test_split(
-            test_size=0.5 * DATASET_CONFIGS[sargs.dataset_name][3], seed=sargs.seed
+            test_size=0.5 * dataset_config[3], seed=sargs.seed
         )
         train_dataset, transfer_dataset = (
             dataset_splits["test"],
@@ -45,11 +46,11 @@ def load_sft_dataset(sargs):
         )
     else:
         original_dataset = load_dataset(
-            DATASET_CONFIGS[sargs.dataset_name][0],
-            name=DATASET_CONFIGS[sargs.dataset_name][1],
+            dataset_config[0],
+            name=dataset_config[1],
             cache_dir="./cache",
         )
-        eval_size = len(original_dataset[DATASET_CONFIGS[sargs.dataset_name][2][1]])
+        eval_size = len(original_dataset[dataset_config[2][1]])
         dataset = load_dataset(
             DIFFICULTY_DATASET_ROOT + sargs.dataset_name,
             cache_dir="./cache",
@@ -152,28 +153,28 @@ def format_dataset(dataset, dataset_name, num_proc):
         remove_columns=None,
         desc="Formatting dataset",
     )
-    dataset = dataset.map(
-        lambda example: {
-            "prompt": INSTRUCTION_TEMPLATE + example["question"],
-            "response": RESPONSE_TEMPLATE + example["choices"][example["target"]],
-            "text": INSTRUCTION_TEMPLATE
-            + example["question"]
-            + "\n"
-            + RESPONSE_TEMPLATE
-            + example["choices"][example["target"]],
-            "response_list": [
-                RESPONSE_TEMPLATE + choice for choice in example["choices"]
-            ],
-            "text_list": [
-                INSTRUCTION_TEMPLATE
-                + example["question"]
-                + "\n"
-                + RESPONSE_TEMPLATE
-                + choice
-                for choice in example["choices"]
-            ],
-        },
-        num_proc=num_proc,
-        desc="Formatting dataset",
-    )
+    # dataset = dataset.map(
+    #     lambda example: {
+    #         "prompt": INSTRUCTION_TEMPLATE + example["question"],
+    #         "response": RESPONSE_TEMPLATE + example["choices"][example["target"]],
+    #         "text": INSTRUCTION_TEMPLATE
+    #         + example["question"]
+    #         + "\n"
+    #         + RESPONSE_TEMPLATE
+    #         + example["choices"][example["target"]],
+    #         "response_list": [
+    #             RESPONSE_TEMPLATE + choice for choice in example["choices"]
+    #         ],
+    #         "text_list": [
+    #             INSTRUCTION_TEMPLATE
+    #             + example["question"]
+    #             + "\n"
+    #             + RESPONSE_TEMPLATE
+    #             + choice
+    #             for choice in example["choices"]
+    #         ],
+    #     },
+    #     num_proc=num_proc,
+    #     desc="Formatting dataset",
+    # )
     return dataset
