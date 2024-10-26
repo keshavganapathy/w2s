@@ -2,7 +2,7 @@ import torch
 import datasets
 datasets.disable_caching()
 from datasets import load_dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM, default_data_collator
+from transformers import AutoTokenizer, AutoModelForCausalLM, default_data_collator, DataCollatorForLanguageModeling
 from torch.utils.data import DataLoader
 
 INSTRUCTION_TEMPLATE = "### Human:\n"
@@ -148,12 +148,23 @@ def format_dataset(dataset, dataset_name, num_proc):
     return dataset
 
 def tokenize_function(examples, tokenizer, max_seq_length):
-    return tokenizer(
+    tokenized = tokenizer(
         examples["text"],
         padding="max_length",
         truncation=True,
         max_length=max_seq_length,
     )
+    # Create labels by copying input_ids
+    tokenized["labels"] = tokenized["input_ids"].copy()
+
+    # Replace padding token IDs in labels with -100
+    padding_token_id = tokenizer.pad_token_id
+    tokenized["labels"] = [
+        [(label if label != padding_token_id else -100) for label in labels]
+        for labels in tokenized["labels"]
+    ]
+
+    return tokenized
 
 def get_dataloaders(args, tokenizer, train_dataset, eval_dataset):
     # Tokenize datasets
@@ -171,10 +182,14 @@ def get_dataloaders(args, tokenizer, train_dataset, eval_dataset):
         remove_columns=eval_dataset.column_names,
     )
 
+    data_collator = DataCollatorForLanguageModeling(
+        tokenizer=tokenizer, mlm=False
+    )
+
     train_dataloader = DataLoader(
         train_dataset,
         shuffle=True,
-        collate_fn=default_data_collator,
+        collate_fn=data_collator,
         batch_size=args.per_device_train_batch_size,
         num_workers=0,
     )
@@ -182,7 +197,7 @@ def get_dataloaders(args, tokenizer, train_dataset, eval_dataset):
     eval_dataloader = DataLoader(
         eval_dataset,
         shuffle=False,
-        collate_fn=default_data_collator,
+        collate_fn=data_collator,
         batch_size=args.per_device_eval_batch_size,
         num_workers=0,
     )

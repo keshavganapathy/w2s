@@ -1,11 +1,7 @@
-import argparse
 import os
 import psutil
 import torch
-import datasets
-import transformers
-from datasets import load_dataset
-from torch.utils.data import DataLoader
+from huggingface_hub import upload_folder
 from transformers import (
     HfArgumentParser,
     get_scheduler,
@@ -41,7 +37,7 @@ class TrainingArguments:
     )
     seed: int = field(default=42, metadata={"help": "Seed for random number generators"})
     model_max_length: int = field(
-        default=256, metadata={"help": "Maximum sequence length"}
+        default=512, metadata={"help": "Maximum sequence length"}
     )
     output_dir: str = field(default="./output", 
         metadata={"help": "Output directory for model checkpoints"}
@@ -59,7 +55,6 @@ class TrainingArguments:
     deepspeed: Optional[str] = field(
         default=None, metadata={"help": "Path to deepspeed config file"}
     )
-    fp16: bool = field(default=False)
 
 
 def main():
@@ -76,13 +71,15 @@ def main():
     accelerator.print("Loading model and tokenizer...")
     # Load model and tokenizer
     model, tokenizer = get_model_and_tokenizer(training_args)
+    model.gradient_checkpointing_enable()
+
     accelerator.print("Model and tokenizer loaded.")
     # Apply LoRA
     lora_config = LoraConfig(
-        r=8,
-        lora_alpha=32,
-        target_modules=["q_proj", "v_proj"],  # Adjust according to the model
-        lora_dropout=0.1,
+        r=64,
+        lora_alpha=16,
+        target_modules=["c_attn", "c_proj", "w1", "w2"],  # Adjust according to the model
+        lora_dropout=0.05,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
     )
@@ -102,7 +99,7 @@ def main():
 
     # Get dataloaders
     train_dataloader, eval_dataloader = get_dataloaders(
-        training_args, training_args, tokenizer, train_dataset, eval_dataset
+        training_args, tokenizer, train_dataset, eval_dataset
     )
     accelerator.print("Dataset loaded.")
 
@@ -118,7 +115,7 @@ def main():
     model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(
         model, optimizer, train_dataloader, eval_dataloader
     )
-    model.gradient_checkpointing_enable()
+
     # Scheduler and math around the number of training steps.
     num_update_steps_per_epoch = (
         len(train_dataloader) // training_args.gradient_accumulation_steps
@@ -203,3 +200,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # upload_folder(
+    #     repo_id="your-username/your-model-name",
+    #     folder_path=output_dir,
+    #     path_in_repo=".",  # Upload at the root of the repository
+    #     commit_message="Upload fine-tuned model and tokenizer",
+    #     token="your_huggingface_token"
+    # )
