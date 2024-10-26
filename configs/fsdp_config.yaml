@@ -1,0 +1,22 @@
+compute_environment: LOCAL_MACHINE
+deepspeed_config: {}
+distributed_type: FSDP
+fsdp_config:
+  fsdp_min_num_params: 0
+  fsdp_sharding_strategy: 1  # full_shard
+  fsdp_offload_params: false
+  fsdp_backward_prefetch_policy: BACKWARD_PRE
+  fsdp_state_dict_type: FULL_STATE_DICT
+  fsdp_mixed_precision: bf16
+  fsdp_auto_wrap_policy: TRANSFORMER_BASED_WRAP
+  fsdp_transformer_layer_cls_to_wrap:
+    - 'LlamaDecoderLayer'
+machine_rank: 0
+main_process_ip: null
+main_process_port: null
+main_training_function: main
+mixed_precision: 'no'  # Do not set mixed_precision here when using FSDP mixed precision
+num_machines: 1
+num_processes: 4  # Set this to the number of GPUs you have
+rdzv_backend: static
+same_network: true

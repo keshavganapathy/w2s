@@ -1,14 +1,12 @@
 import torch
 import datasets
-import re
-
+datasets.disable_caching()
+from datasets import load_dataset
+from transformers import AutoTokenizer, AutoModelForCausalLM, default_data_collator
+from torch.utils.data import DataLoader
 
 INSTRUCTION_TEMPLATE = "### Human:\n"
 RESPONSE_TEMPLATE = "### Response:\n"
-
-datasets.disable_caching()
-from datasets import load_dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM
 
 DATASET_CONFIGS = {
     # Short response
@@ -19,7 +17,7 @@ DATASET_CONFIGS = {
     "math": ("math_dataset", "all", ("train", "test"), 1.0, 1.0)
 }
 
-DIFFICULTY_DATASET_ROOT = "Aakriti05/"
+# DIFFICULTY_DATASET_ROOT = "Aakriti05/"
 
 
 def load_sft_dataset(sargs):
@@ -45,24 +43,25 @@ def load_sft_dataset(sargs):
             range(min(len(transfer_dataset), len(train_dataset)))
         )
     else:
-        original_dataset = load_dataset(
-            dataset_config[0],
-            name=dataset_config[1],
-            cache_dir="./cache",
-        )
-        eval_size = len(original_dataset[dataset_config[2][1]])
-        dataset = load_dataset(
-            DIFFICULTY_DATASET_ROOT + sargs.dataset_name,
-            cache_dir="./cache",
-        )["train"].sort("Diff_rating")
-        train_dataset = dataset.select(range((len(dataset) - eval_size) // 2))
-        transfer_dataset = dataset.select(
-            range((len(dataset) - eval_size) // 2, len(dataset) - eval_size)
-        )
-        transfer_dataset = transfer_dataset.select(
-            range(min(len(transfer_dataset), len(train_dataset)))
-        )
-        eval_dataset = dataset.select(range(len(dataset) - eval_size, len(dataset)))
+        pass
+        # original_dataset = load_dataset(
+        #     dataset_config[0],
+        #     name=dataset_config[1],
+        #     cache_dir="./cache",
+        # )
+        # eval_size = len(original_dataset[dataset_config[2][1]])
+        # dataset = load_dataset(
+        #     DIFFICULTY_DATASET_ROOT + sargs.dataset_name,
+        #     cache_dir="./cache",
+        # )["train"].sort("Diff_rating")
+        # train_dataset = dataset.select(range((len(dataset) - eval_size) // 2))
+        # transfer_dataset = dataset.select(
+        #     range((len(dataset) - eval_size) // 2, len(dataset) - eval_size)
+        # )
+        # transfer_dataset = transfer_dataset.select(
+        #     range(min(len(transfer_dataset), len(train_dataset)))
+        # )
+        # eval_dataset = dataset.select(range(len(dataset) - eval_size, len(dataset)))
 
     if sargs.test_limit >= 0:
         train_dataset = train_dataset.select(
@@ -77,22 +76,19 @@ def load_sft_dataset(sargs):
 
     return train_dataset, transfer_dataset, eval_dataset
 
-
-def load_pretrain_model_tokenizer(sargs, accelerator, mode="weak"):
+def get_model_and_tokenizer(args):
     model = AutoModelForCausalLM.from_pretrained(
-        sargs.model_name,
-        torch_dtype=torch.bfloat16,
+        args.model_name,
         low_cpu_mem_usage=False,
         trust_remote_code=False,
         use_cache=True,
         cache_dir="./cache",
     )
     tokenizer = AutoTokenizer.from_pretrained(
-        sargs.model_name,
-        model_max_length=sargs.model_max_length,
+        args.model_name,
+        model_max_length=args.model_max_length,
         padding=True,
         truncation=True,
-        # Important, do not change
         padding_side="left",
         use_fast=True,
         trust_remote_code=False,
@@ -100,8 +96,6 @@ def load_pretrain_model_tokenizer(sargs, accelerator, mode="weak"):
     )
     tokenizer.pad_token_id = tokenizer.eos_token_id
     return model, tokenizer
-
-
 
 def sciq_formatter_func(example):
     support = example["support"].lstrip()
@@ -115,7 +109,6 @@ def sciq_formatter_func(example):
         ],
         "target": 3,
     }
-
 
 def arc_formatter_func(example):
     return {
@@ -138,7 +131,6 @@ def math_formatter_func(example):
         'text': INSTRUCTION_TEMPLATE + question + '\n' + RESPONSE_TEMPLATE + answer,
     }
 
-
 def format_dataset(dataset, dataset_name, num_proc):
     formatter_func = {
         "sciq": sciq_formatter_func,
@@ -153,28 +145,46 @@ def format_dataset(dataset, dataset_name, num_proc):
         remove_columns=None,
         desc="Formatting dataset",
     )
-    # dataset = dataset.map(
-    #     lambda example: {
-    #         "prompt": INSTRUCTION_TEMPLATE + example["question"],
-    #         "response": RESPONSE_TEMPLATE + example["choices"][example["target"]],
-    #         "text": INSTRUCTION_TEMPLATE
-    #         + example["question"]
-    #         + "\n"
-    #         + RESPONSE_TEMPLATE
-    #         + example["choices"][example["target"]],
-    #         "response_list": [
-    #             RESPONSE_TEMPLATE + choice for choice in example["choices"]
-    #         ],
-    #         "text_list": [
-    #             INSTRUCTION_TEMPLATE
-    #             + example["question"]
-    #             + "\n"
-    #             + RESPONSE_TEMPLATE
-    #             + choice
-    #             for choice in example["choices"]
-    #         ],
-    #     },
-    #     num_proc=num_proc,
-    #     desc="Formatting dataset",
-    # )
     return dataset
+
+def tokenize_function(examples, tokenizer, max_seq_length):
+    return tokenizer(
+        examples["text"],
+        padding="max_length",
+        truncation=True,
+        max_length=max_seq_length,
+    )
+
+def get_dataloaders(args, tokenizer, train_dataset, eval_dataset):
+    # Tokenize datasets
+    train_dataset = train_dataset.map(
+        lambda examples: tokenize_function(examples, tokenizer, args.model_max_length),
+        batched=True,
+        num_proc=args.num_proc,
+        remove_columns=train_dataset.column_names,
+    )
+
+    eval_dataset = eval_dataset.map(
+        lambda examples: tokenize_function(examples, tokenizer, args.model_max_length),
+        batched=True,
+        num_proc=args.num_proc,
+        remove_columns=eval_dataset.column_names,
+    )
+
+    train_dataloader = DataLoader(
+        train_dataset,
+        shuffle=True,
+        collate_fn=default_data_collator,
+        batch_size=args.per_device_train_batch_size,
+        num_workers=0,
+    )
+
+    eval_dataloader = DataLoader(
+        eval_dataset,
+        shuffle=False,
+        collate_fn=default_data_collator,
+        batch_size=args.per_device_eval_batch_size,
+        num_workers=0,
+    )
+
+    return train_dataloader, eval_dataloader

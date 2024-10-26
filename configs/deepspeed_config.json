@@ -1,0 +1,21 @@
+{
+    "train_batch_size": 8,
+    "gradient_accumulation_steps": 8,
+    "zero_optimization": {
+      "stage": 3,
+      "overlap_comm": true,
+      "contiguous_gradients": true,
+      "reduce_bucket_size": 50000000,
+      "stage3_prefetch_bucket_size": 50000000,
+      "stage3_param_persistence_threshold": 1000000,
+      "offload_param": {
+        "device": "none"
+      },
+      "offload_optimizer": {
+        "device": "none"
+      }
+    },
+    "fp16": {
+      "enabled": true
+    }
+  }
