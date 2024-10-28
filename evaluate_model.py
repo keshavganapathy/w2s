@@ -1,9 +1,11 @@
+# Import necessary libraries
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 from datasets import load_dataset
 import random
 import re
 import numpy as np
+import csv  # Added for CSV writing
 
 def data_preparation(difficulty:int=-1):
     assert difficulty>=-1 and difficulty<=6
@@ -33,22 +35,48 @@ def load_model(path):
     return model, tokenizer
 
 def get_answer(model, tokenizer, question):
-    """Get model's response to a question"""
-    prompt = f"Solve this math problem and give just the numerical answer after ####: {question} \n\nOnly provide the final answer after ####"
+    """Get model's response to a question with explanation and final answer"""
+    # Construct prompt requesting explanation and final answer format
+    prompt = (
+        f"Question: {question}\n"
+        "Explain your solution step by step, then provide the final numerical answer after the ###.\n"
+        "Your response should be in this format:\n"
+        "Step-by-step explanation...\n"
+        "###\n"
+        "numerical_answer\n\n"
+        "Answer: "
+    )
     
-    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+    inputs = tokenizer(prompt, 
+                      return_tensors="pt", 
+                      truncation=True, 
+                      max_length=512)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
     
     with torch.no_grad():
         outputs = model.generate(
             **inputs,
-            max_length=128,
-            num_beams=1,
+            max_length=256,  # Increased to allow for explanation + answer
+            num_beams=5,     # Increased for better reasoning
             do_sample=False,
+            temperature=0.7,
+            repetition_penalty=1.2,
             pad_token_id=tokenizer.eos_token_id
         )
     
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    
+    # Ensure response has the ### separator
+    if "###" not in response:
+        # Try to extract the last number as the answer
+        numbers = re.findall(r'-?\d*\.?\d+', response)
+        if numbers:
+            answer = numbers[-1]
+            explanation = response.strip()
+            response = f"{explanation}\n###\n{answer}"
+        else:
+            response = f"{response}\n###\nERROR: No number found"
+    
     return response
 
 def extract_number(text):
@@ -85,7 +113,7 @@ def evaluate_accuracy(predictions, ground_truth, tolerance=1e-6):
 def main():
     # Model paths
     model_paths = [
-        "/fs/classhomes/fall2024/cmsc473/c4730005/w2s/debate_models/pythia_debate_160m/models/weak/checkpoint-1869",
+        "/fs/classhomes/fall2024/cmsc473/c4730005/w2s/models/strong/checkpoint-33624",
     ]
     
     # Load dataset
@@ -105,6 +133,7 @@ def main():
             
             predictions = []
             ground_truth = []
+            data_rows = []  # List to store data for CSV
             
             for idx, example in enumerate(test_subset):
                 question = example['question']
@@ -124,10 +153,26 @@ def main():
                     predictions.append(pred_answer)
                     ground_truth.append(true_answer)
                     
+                    # Collect data for CSV
+                    data_rows.append({
+                        'Question': question,
+                        'Ground Truth Answer': true_answer,
+                        'Model Response': response,
+                        'Extracted Answer': pred_answer
+                    })
+                    
                 except Exception as e:
                     print(f"Error processing question: {str(e)}")
                     predictions.append(None)
                     ground_truth.append(true_answer)
+                    
+                    # Collect data for CSV with None values
+                    data_rows.append({
+                        'Question': question,
+                        'Ground Truth Answer': true_answer,
+                        'Model Response': 'Error',
+                        'Extracted Answer': None
+                    })
             
             # Calculate and display metrics
             accuracy = evaluate_accuracy(predictions, ground_truth)
@@ -144,6 +189,18 @@ def main():
                 std_pred = np.std(valid_predictions)
                 print(f"Mean prediction: {mean_pred:.2f}")
                 print(f"Std deviation: {std_pred:.2f}")
+            
+            # Write data to CSV
+            csv_file_name = f"model_{i}_results.csv"
+            with open(csv_file_name, mode='w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['Question', 'Ground Truth Answer', 'Model Response', 'Extracted Answer']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                
+                writer.writeheader()
+                for row in data_rows:
+                    writer.writerow(row)
+            
+            print(f"Results saved to {csv_file_name}")
             
         except Exception as e:
             print(f"Error with model {i}: {str(e)}")
