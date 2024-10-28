@@ -41,6 +41,11 @@ And you can use `sbatch submit.sh` to launch the job.
 
 `upload.py` file is used for uploading your trained model to the huggingface to save your local storage.
 
+Script to download huggingface models:
+```
+huggingface-cli download LanguageBind/LanguageBind_Image --local-dir ./LanguageBind_Image
+```
+
 
 ## File Description
 A simple way to test accuracy is to randomly select 100 questions from the dataset and measure accuracy based on the responses. Below is a description of relevant files:
