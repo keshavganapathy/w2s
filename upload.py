@@ -31,7 +31,7 @@ def main():
 
     # Create the repository on Hugging Face Hub
     try:
-        api.create_repo(name=model_name, token=token, exist_ok=True)
+        api.create_repo(repo_id=repo_id, token=token, exist_ok=True)
         print(f"Repository '{repo_id}' is ready.")
     except Exception as e:
         print(f"Error creating repository '{repo_id}': {e}")

@@ -44,8 +44,8 @@ class TrainingArguments:
     )
     overwrite_output_dir: bool = field(default=False)
     num_train_epochs: int = field(default=3)
-    per_device_train_batch_size: int = field(default=8)
-    per_device_eval_batch_size: int = field(default=8)
+    per_device_train_batch_size: int = field(default=2)
+    per_device_eval_batch_size: int = field(default=2)
     gradient_accumulation_steps: int = field(default=1)
     learning_rate: float = field(default=5e-5)
     weight_decay: float = field(default=0.0)
@@ -78,7 +78,7 @@ def main():
     lora_config = LoraConfig(
         r=64,
         lora_alpha=16,
-        target_modules=["c_attn", "c_proj", "w1", "w2"],  # Adjust according to the model
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "embed_tokens", "lm_head",],  # Adjust according to the model
         lora_dropout=0.05,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
@@ -189,8 +189,8 @@ def main():
         accelerator.print(f"Epoch {epoch}, eval_loss {eval_loss.item()}")
 
     # Save the model
+    accelerator.wait_for_everyone()
     if accelerator.is_main_process:
-        accelerator.wait_for_everyone()
         unwrapped_model = accelerator.unwrap_model(model)
         unwrapped_model.save_pretrained(
             training_args.output_dir, save_function=accelerator.save

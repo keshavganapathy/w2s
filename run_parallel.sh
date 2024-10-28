@@ -19,11 +19,11 @@ export NCCL_ASYNC_ERROR_HANDLING=1
 #  microsoft/Phi-3.5-mini-instruct
 echo "launch training"
 accelerate launch --config_file ./configs/deepspeed_accelerate_config.yaml --deepspeed_config_file ./configs/deepspeed_config.json train_parallel.py \
-    --model_name Qwen/Qwen2.5-7B-Instruct \
+    --model_name Qwen/Qwen2.5-3B-Instruct \
     --dataset_name gsm8k \
     --output_dir ./output \
-    --per_device_train_batch_size 1 \
-    --per_device_eval_batch_size 1 \
-    --num_train_epochs 3 \
-    --learning_rate 5e-5 \
+    --per_device_train_batch_size 2 \
+    --per_device_eval_batch_size 2 \
+    --num_train_epochs 5 \
+    --learning_rate 1e-5 \
     --logging_steps 100
