@@ -42,21 +42,22 @@ And you can use `sbatch submit.sh` to launch the job.
 `upload.py` file is used for uploading your trained model to the huggingface to save your local storage.
 
 
-## File description
-So far, a trivial way to test accuracy is to randomly select 100 questions from the dataset, and measure accuracy based on responses. Below is a description of relevant files:
-```
+## File Description
+A simple way to test accuracy is to randomly select 100 questions from the dataset and measure accuracy based on the responses. Below is a description of relevant files:
 
-evaluate_model - script to test the accuracy of local model, currently implemented for pythia_debate_160m
-evaluate_qwen2.5 - script to test the accuracy of Qwen2.5-Math-1.5B-Instruct. Can be found here: [https://huggingface.co/Qwen/Qwen2.5-Math-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Math-1.5B-Instruct)
-evaluate_tinyllama.py - script to test the accuracy of TinyLlama_v1.1_math_code. Can be found here: [https://huggingface.co/Qwen/Qwen2.5-Math-1.5B-Instruct](https://huggingface.co/TinyLlama/TinyLlama_v1.1_math_code)
-best_of_n - script to simulate best of n debate, generalized, all models are currently the  Qwen2.5-Math-1.5B-Instruct.
+- **evaluate_model.py**: Script to test the accuracy of the local model, currently implemented for `pythia_debate_160m`.
+- **evaluate_qwen2.5.py**: Script to test the accuracy of `Qwen2.5-Math-1.5B-Instruct`. Can be found here: [Qwen2.5-Math-1.5B-Instruct on Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Math-1.5B-Instruct)
+- **evaluate_tinyllama.py**: Script to test the accuracy of `TinyLlama_v1.1_math_code`. Can be found here: [TinyLlama_v1.1_math_code on Hugging Face](https://huggingface.co/TinyLlama/TinyLlama_v1.1_math_code)
+- **best_of_n.py**: Script to simulate best-of-n debate, generalized. All models currently tested are `Qwen2.5-Math-1.5B-Instruct`.
 
-```
+## Results for Best-of-n
 
-Results so far for best_of_n:
-Running accuracy of Model 1 after 100 questions: 41.00%
-Running accuracy of Model 2 after 100 questions: 41.00%
-Running accuracy of Model 3 after 100 questions: 41.00%
-Running accuracy of Model 4 after 100 questions: 41.00%
-Running accuracy of Model 5 after 100 questions: 35.00%
-Running accuracy of Majority Vote after 100 questions: 48.00%
+| Model                  | Running Accuracy (100 Questions) |
+|------------------------|----------------------------------|
+| Model 1                | 41.00%                           |
+| Model 2                | 41.00%                           |
+| Model 3                | 41.00%                           |
+| Model 4                | 41.00%                           |
+| Model 5                | 35.00%                           |
+| Majority Vote          | 48.00%                           |
+
