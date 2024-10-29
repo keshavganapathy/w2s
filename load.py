@@ -9,16 +9,9 @@ INSTRUCTION_TEMPLATE = "### Human:\n"
 RESPONSE_TEMPLATE = "### Response:\n"
 
 DATASET_CONFIGS = {
-    # Short response
-    # "sciq": ("allenai/sciq", None, ("train", "test"), 1.0, 1.0),
-    # "arc": ("allenai/ai2_arc", "ARC-Challenge", ("train", "test"), 1.0, 1.0),
-
     "gsm8k": ("gsm8k", "main", ("train", "test"), 1.0, 1.0),
     "math": ("math_dataset", "all", ("train", "test"), 1.0, 1.0)
 }
-
-# DIFFICULTY_DATASET_ROOT = "Aakriti05/"
-
 
 def load_sft_dataset(sargs):
     dataset_config = DATASET_CONFIGS[sargs.dataset_name]
@@ -97,25 +90,6 @@ def get_model_and_tokenizer(args):
     tokenizer.pad_token_id = tokenizer.eos_token_id
     return model, tokenizer
 
-def sciq_formatter_func(example):
-    support = example["support"].lstrip()
-    return {
-        "question": f"{support}\n{example['question']}",
-        "choices": [
-            example["distractor1"],
-            example["distractor2"],
-            example["distractor3"],
-            example["correct_answer"],
-        ],
-        "target": 3,
-    }
-
-def arc_formatter_func(example):
-    return {
-        "question": f"{example['question']}",
-        "choices": example["choices"]["text"],
-        "target": example["choices"]["label"].index(example["answerKey"]),
-    }
 
 def gsm8k_formatter_func(example):
     question = example['question']
@@ -133,8 +107,6 @@ def math_formatter_func(example):
 
 def format_dataset(dataset, dataset_name, num_proc):
     formatter_func = {
-        "sciq": sciq_formatter_func,
-        "arc": arc_formatter_func,
         "gsm8k": gsm8k_formatter_func,
         "math": math_formatter_func,
     }[dataset_name]
