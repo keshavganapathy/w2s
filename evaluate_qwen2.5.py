@@ -4,12 +4,14 @@ from datasets import load_dataset
 import re
 import random
 import numpy as np
+from peft import PeftModel
+
 
 # Load the Qwen model and tokenizer
 
 print("--- Starting Code")
 
-model_name = "Qwen/Qwen2.5-Math-1.5B-Instruct"
+model_name = "Qwen/Qwen2.5-3B-Instruct"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 model = AutoModelForCausalLM.from_pretrained(
@@ -17,7 +19,9 @@ model = AutoModelForCausalLM.from_pretrained(
     torch_dtype="auto",
     device_map="auto"
 )
+
 tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = PeftModel.from_pretrained(model, "ybian-umd/Qwen2.5-3B-Instruct-gsm8k-6")
 
 print("--- Loaded Model")
 

@@ -82,7 +82,7 @@ def get_model_and_tokenizer(args):
         low_cpu_mem_usage=False,
         trust_remote_code=False,
         use_cache=True,
-        cache_dir="./cache",
+        cache_dir="/fs/class-projects/fall2024/cmsc473/c473g001/cache",
     )
     tokenizer = AutoTokenizer.from_pretrained(
         args.model_name,
@@ -92,7 +92,7 @@ def get_model_and_tokenizer(args):
         padding_side="left",
         use_fast=True,
         trust_remote_code=False,
-        cache_dir="./cache",
+        cache_dir="/fs/class-projects/fall2024/cmsc473/c473g001/cache",
     )
     tokenizer.pad_token_id = tokenizer.eos_token_id
     return model, tokenizer

@@ -78,7 +78,7 @@ def main():
     lora_config = LoraConfig(
         r=64,
         lora_alpha=16,
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "embed_tokens", "lm_head",],  # Adjust according to the model
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],  # Adjust according to the model
         lora_dropout=0.05,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
