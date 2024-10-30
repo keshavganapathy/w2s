@@ -123,7 +123,6 @@ dataset = data_preparation(difficulty=-1)
 
 print("--- Select Datasets")
 # Randomly select 100 questions
-random.seed(42)  # For reproducibility
 indices = random.sample(range(len(dataset)), 100)
 selected_samples = dataset.select(indices)
 

@@ -5,22 +5,24 @@ import re
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from peft import PeftModel
 
 print("--- Starting Code")
 
-# Set the number of models (n) to use
-n = 5  # You can change this value to generalize for any n
+n=5
 
-# Load the Qwen model and tokenizer
-model_name = "Qwen/Qwen2.5-Math-1.5B-Instruct"
+model_name = "Qwen/Qwen2.5-3B-Instruct"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype="auto",
-    device_map="auto"
+    device_map="auto",
+    attn_implementation="flash_attention_2"
 )
+
 tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = PeftModel.from_pretrained(model, "ybian-umd/Qwen2.5-3B-Instruct-gsm8k-6")
 
 print("--- Loaded Model")
 
@@ -77,10 +79,9 @@ def get_answer(model, tokenizer, question, n=1):
         outputs = model.generate(
             **inputs,
             max_new_tokens=256,  # Increased to allow for explanation + answer
-            num_beams=1,         # Set to 1 when using sampling
-            do_sample=True,      # Enable sampling
+            num_beams=n,         # Set to 1 when using sampling
+            do_sample=False,      # Enable sampling
             temperature=0.7,
-            top_k=50,
             num_return_sequences=n,  # Generate n sequences
             repetition_penalty=1.2,
             pad_token_id=tokenizer.eos_token_id
@@ -130,7 +131,7 @@ dataset = data_preparation(difficulty=-1)
 
 print("--- Select Datasets")
 # Randomly select 100 questions
-random.seed(42)  # For reproducibility
+# random.seed()  # For reproducibility
 indices = random.sample(range(len(dataset)), 100)
 selected_samples = dataset.select(indices)
 
