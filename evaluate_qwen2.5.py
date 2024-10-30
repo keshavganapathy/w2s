@@ -11,17 +11,18 @@ from peft import PeftModel
 
 print("--- Starting Code")
 
-model_name = "Qwen/Qwen2.5-3B-Instruct"
+model_name = "Qwen/Qwen2.5-7B-Instruct"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype="auto",
-    device_map="auto"
+    device_map="auto",
+    attn_implementation="flash_attention_2",
 )
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = PeftModel.from_pretrained(model, "ybian-umd/Qwen2.5-3B-Instruct-gsm8k-6")
+model = PeftModel.from_pretrained(model, "ybian-umd/Qwen2.5-7B-Instruct-gsm8k-2")
 
 print("--- Loaded Model")
 
