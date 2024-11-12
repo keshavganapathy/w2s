@@ -66,3 +66,7 @@ A simple way to test accuracy is to randomly select 100 questions from the datas
 | Model 5                | 35.00%                           |
 | Majority Vote          | 48.00%                           |
 
+## Contributions Log
+- Week of 11/4. (Keshav and Yihan) Use Tom's suggestions to use SOTA LLMs to rerun baseline experiments with gemini-1.0-pro. Found, best of n: 83.29% multiple round: 85.90. Challenges, free API limits, and costs for other LLMs.
+- Week of 10/28. (Keshav) Wrote the code for best of n, and debate with deliberation used in midterm presentation.
+
