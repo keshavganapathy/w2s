@@ -70,3 +70,16 @@ A simple way to test accuracy is to randomly select 100 questions from the datas
 - Week of 11/4. (Keshav and Yihan) Use Tom's suggestions to use SOTA LLMs to rerun baseline experiments with gemini-1.0-pro. Found, best of n: 83.29% multiple round: 85.90. Challenges, free API limits, and costs for other LLMs.
 - Week of 10/28. (Keshav) Wrote the code for best of n, and debate with deliberation used in midterm presentation.
 
+## Baseline
+
+Self consistency using 3 agents
+
+| Model                         | one model | best of n | self-consistency (2 round) | self-consistency (3 round) |
+|-------------------------------|-----------| ----------| -------------------------- |----------------------------|
+| Gemini Pro 1.0 (600)          | 77.82%    | 84.24%    | 84.63%                     | 85.40%                     |
+| Qwen2.5-7B-Instruct           | 91.28%    | 91.28%    | 91.43%                     | 91.58%                     |
+| Llama-3.1-8B-Instruct         | 85.97%    | 86.13%    | 86.50%                     | 86.50%                     |
+| Phi-3-small-8k-instruct       | 89.61%    | 89.61%    | 89.31%                     | 89.61%                     |
+| Qwen2.5-7B-Instruct (CoT)     | 90.31%    | 90.31%    | 91.08%                     | 90.92%                     |
+| Llama-3.1-8B-Instruct (CoT)   | 87.23%    | 87.38%    | 88.15%                     | 87.69%                     |
+
