@@ -6,6 +6,8 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from peft import PeftModel
+from load import data_preparation
+from evaluate import extract_number
 
 print("--- Starting Code")
 
@@ -25,29 +27,6 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = PeftModel.from_pretrained(model, "ybian-umd/Qwen2.5-3B-Instruct-gsm8k-6")
 
 print("--- Loaded Model")
-
-def extract_number(text):
-    """Extract numerical answer from text"""
-    try:
-        # Split by #### and get the last part
-        parts = text.split('####')
-        if len(parts) < 2:
-            # Try splitting by ###
-            parts = text.split('###')
-            if len(parts) < 2:
-                return None
-                    
-        after_hash = parts[-1].strip()
-        
-        # Find the last number in the text (including negative and decimal)
-        numbers = re.findall(r'-?\d*\.?\d+', after_hash)
-        if numbers:
-            # Take the last number found after #### or ###
-            return float(numbers[-1])
-    except Exception as e:
-        print(f"Error in extract_number: {str(e)}")
-        return None
-    return None
 
 def get_answer(model, tokenizer, question, n=1):
     """Get model's responses to a question with explanation and final answer"""
@@ -108,22 +87,6 @@ def get_answer(model, tokenizer, question, n=1):
         responses.append(response)
     
     return responses
-
-def data_preparation(difficulty=-1):
-    assert difficulty >= -1 and difficulty <=6
-    dataset = load_dataset(
-        "furonghuang-lab/Easy2Hard-Bench",
-        "E2H-GSM8K",
-        split="eval",
-    ).select_columns(
-        ["question", "answer", "rating_quantile"]
-    ).sort(
-        "rating_quantile"
-    )
-    if difficulty != -1:
-        return dataset.select(range(2*difficulty*100, (2*difficulty+1)*100))
-    else:
-        return dataset
 
 print("--- Load Dataset")
 # Load the dataset

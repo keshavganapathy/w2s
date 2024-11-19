@@ -174,3 +174,20 @@ def get_dataloaders(args, tokenizer, train_dataset, eval_dataset):
     )
 
     return train_dataloader, eval_dataloader
+
+
+def data_preparation(difficulty=-1):
+    assert difficulty >= -1 and difficulty <=6
+    dataset = load_dataset(
+        "furonghuang-lab/Easy2Hard-Bench",
+        "E2H-GSM8K",
+        split="eval",
+    ).select_columns(
+        ["question", "answer", "rating_quantile"]
+    ).sort(
+        "rating_quantile"
+    )
+    if difficulty != -1:
+        return dataset.select(range(2*difficulty*100, (2*difficulty+1)*100))
+    else:
+        return dataset

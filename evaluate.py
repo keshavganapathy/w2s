@@ -29,6 +29,26 @@ def extract_number(text):
     return None
 
 
+def extract_number_pred(input_str):
+    pattern = r"\{([0-9.,$]*)\}"
+    matches = re.findall(pattern, input_str)
+
+    solution = None
+
+    for match_str in matches[::-1]:
+        solution = re.sub(r"[^0-9.]", "", match_str)
+        if solution:
+            break
+
+    if solution:
+        try:
+            solution = float(solution)
+        except:
+            return None
+    else:
+        return None
+    return solution
+
 
 def accuracy(true_answers, pred_answers):
     """Calculate the accuracy of predicted answers"""
