@@ -83,3 +83,20 @@ Self consistency using 3 agents
 | Qwen2.5-7B-Instruct (CoT)     | 90.31%    | 90.31%    | 91.08%                     | 90.92%                     |
 | Llama-3.1-8B-Instruct (CoT)   | 87.23%    | 87.38%    | 88.15%                     | 87.69%                     |
 
+2 model consistency 
+
+| Model agent/reference         | Qwen2.5-7B-Instruct       | Llama-3.1-8B-Instruct         |
+|-------------------------------|---------------------------| ------------------------------|
+| Qwen2.5-7B-Instruct           | 91.43%(3 agent)           | 89.08%                        |
+| Llama-3.1-8B-Instruct         | 88.33%                    | 86.50%(3 agent)               |
+
+
+2 model consistency (CoT)
+
+| Model agent/reference         | Qwen2.5-7B-Instruct       | Llama-3.1-8B-Instruct         |
+|-------------------------------|---------------------------| ------------------------------|
+| Qwen2.5-7B-Instruct           | 91.08%(3 agent)           | 85.00%                        |
+| Llama-3.1-8B-Instruct         | 90.62%                    | 88.15%(3 agent)               |
+
+With good reference thought process, model gets better performence.
+
