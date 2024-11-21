@@ -100,3 +100,16 @@ Self consistency using 3 agents
 
 With good reference thought process, model gets better performence.
 
+3 model consistency 
+
+Overall: 91.38%, 91.69%, 91.23%
+
+Better than all models self-consistency results.
+
+| Model                              | base (noref) | reference 2other (2 round) | reference 2other (3 round) |
+|------------------------------------| -------------| -------------------------- |----------------------------|
+| Qwen2.5-7B-Instruct (CoT)          | 90.31%       | 90.77%                     | 91.38%                     |
+| Llama-3.1-8B-Instruct (CoT)        | 87.38%       | 90.92%                     | 91.38%                     |
+| Ministral-8B-Instruct-2410 (CoT)   | 87.38%       | 90.61%                     | 90.15%                     |
+
+Stronger model (better baseline performence) get better results by consulting the references answers from two weaker model
