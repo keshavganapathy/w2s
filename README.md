@@ -67,6 +67,7 @@ A simple way to test accuracy is to randomly select 100 questions from the datas
 | Majority Vote          | 48.00%                           |
 
 ## Contributions Log
+- Week of 11/11 and 11/18 - Initial implementaton of deliberation on the chain of thought, but running into prompting issues. For example, looking at outputs models seem to be performing better, but final answers and such arent in the format we want.
 - Week of 11/4. (Keshav and Yihan) Use Tom's suggestions to use SOTA LLMs to rerun baseline experiments with gemini-1.0-pro. Found, best of n: 83.29% multiple round: 85.90. Challenges, free API limits, and costs for other LLMs.
 - Week of 10/28. (Keshav) Wrote the code for best of n, and debate with deliberation used in midterm presentation.
 
