@@ -70,18 +70,24 @@ A simple way to test accuracy is to randomly select 100 questions from the datas
 - Week of 11/4. (Keshav and Yihan) Use Tom's suggestions to use SOTA LLMs to rerun baseline experiments with gemini-1.0-pro. Found, best of n: 83.29% multiple round: 85.90. Challenges, free API limits, and costs for other LLMs.
 - Week of 10/28. (Keshav) Wrote the code for best of n, and debate with deliberation used in midterm presentation.
 
-## Baseline
+## Results
 
 Self consistency using 3 agents
 
-| Model                         | one model | best of n | self-consistency (2 round) | self-consistency (3 round) |
-|-------------------------------|-----------| ----------| -------------------------- |----------------------------|
-| Gemini Pro 1.0 (600)          | 77.82%    | 84.24%    | 84.63%                     | 85.40%                     |
-| Qwen2.5-7B-Instruct           | 91.28%    | 91.28%    | 91.43%                     | 91.58%                     |
-| Llama-3.1-8B-Instruct         | 85.97%    | 86.13%    | 86.50%                     | 86.50%                     |
-| Phi-3-small-8k-instruct       | 89.61%    | 89.61%    | 89.31%                     | 89.61%                     |
-| Qwen2.5-7B-Instruct (CoT)     | 90.31%    | 90.31%    | 91.08%                     | 90.92%                     |
-| Llama-3.1-8B-Instruct (CoT)   | 87.23%    | 87.38%    | 88.15%                     | 87.69%                     |
+CoT: Chain of Thought. Just add "Step-by-step" in the promtps.
+
+Result in () is on the full test set (1319). The default is 650.
+
+| Model                         | one model     | best of n         | self-consistency (2 round) | self-consistency (3 round) |
+|-------------------------------|-------------- | ----------------- | -------------------------- |----------------------------|
+| Gemini Pro 1.0 (600)          | 77.82%        | 84.24%            | 84.63%                     | 85.40%                     |
+| Qwen2.5-7B-Instruct           | 90.77%(91.28%)| 90.77%(91.28%)    | 91.08%(91.43%)             | 91.23%(91.58%)             |
+| Llama-3.1-8B-Instruct         | 85.38%(85.97%)| 85.38%(86.13%)    | 85.69%(86.50%)             | 85.69%(86.50%)             |
+| Phi-3-small-8k-instruct       | 89.61%        | 89.61%            | 89.31%                     | 89.61%                     |
+| Qwen2.5-7B-Instruct (CoT)     | 90.31%        | 90.31%            | 91.08%                     | 90.92%                     |
+| Llama-3.1-8B-Instruct (CoT)   | 87.38%        | 87.38%            | 88.15%                     | 87.69%                     |
+
+The bare Qwen2.5-7B-Instruct's performence is questionable. This model will generate answer using CoT automatically (without prompt engineering)
 
 2 model consistency 
 
