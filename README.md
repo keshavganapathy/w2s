@@ -67,6 +67,7 @@ A simple way to test accuracy is to randomly select 100 questions from the datas
 | Majority Vote          | 48.00%                           |
 
 ## Contributions Log
+- Week of 11/11 and 11/18 - Initial implementaton of deliberation on the chain of thought, but running into prompting issues. For example, looking at outputs models seem to be performing better, but final answers and such arent in the format we want.
 - Week of 11/4. (Keshav and Yihan) Use Tom's suggestions to use SOTA LLMs to rerun baseline experiments with gemini-1.0-pro. Found, best of n: 83.29% multiple round: 85.90. Challenges, free API limits, and costs for other LLMs.
 - Week of 10/28. (Keshav) Wrote the code for best of n, and debate with deliberation used in midterm presentation.
 
@@ -146,6 +147,7 @@ Better than all models self-consistency results.
 | Ministral-8B-Instruct-2410 (CoT)   | 87.38%       | 90.61%                     | 90.15%                     |
 
 Stronger model (better baseline performence) get better results by consulting the references answers from two weaker model
+<<<<<<< HEAD
 
 #### Difficulty level break down
 Qwen2.5-7B-Instruct:
@@ -163,3 +165,5 @@ Llama-3.1-8B-Instruct
 | 0     | 97.06        | 92.0         | 88.24        | 88.62        | 70.77        |
 | 1     | 99.26        | 94.4         | 92.65        | 88.62        | 79.23        |
 | 2     | 99.26        | 95.2         | 94.85        | 88.62        | 78.46        |
+=======
+>>>>>>> d7587a26678b3a1e3f2b3465a079ecd0b33c27ee
