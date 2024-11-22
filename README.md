@@ -89,11 +89,38 @@ Result in () is on the full test set (1319). The default is 650.
 
 The bare Qwen2.5-7B-Instruct's performence is questionable. This model will generate answer using CoT automatically (without prompt engineering)
 
+#### Difficulty level break down
+Qwen2.5-7B-Instruct:
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 99.26        | 95.2         | 91.18        | 85.37        | 82.31        |
+| 1     | 99.26        | 95.2         | 91.91        | 85.37        | 83.08        |
+| 2     | 99.26        | 95.2         | 91.91        | 86.18        | 83.08        |
+
+Llama-3.1-8B-Instruct
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 95.59        | 93.6         | 87.5         | 83.74        | 66.15        |
+| 1     | 94.85        | 93.6         | 88.97        | 83.74        | 66.92        |
+| 2     | 94.85        | 93.6         | 88.24        | 83.74        | 67.69        |
+
+Llama-3.1-8B-Instruct (CoT)
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 97.06        | 92.8         | 88.97        | 86.99        | 70.77        |
+| 1     | 97.79        | 92.0         | 88.97        | 89.43        | 72.31        |
+| 2     | 97.06        | 91.2         | 89.71        | 88.62        | 71.54        |
+
+### Multi model communication
+
 2 model consistency 
 
 | Model agent/reference         | Qwen2.5-7B-Instruct       | Llama-3.1-8B-Instruct         |
 |-------------------------------|---------------------------| ------------------------------|
-| Qwen2.5-7B-Instruct           | 91.43%(3 agent)           | 89.08%                        |
+| Qwen2.5-7B-Instruct           | 91.08%(3 agent)           | 89.08%                        |
 | Llama-3.1-8B-Instruct         | 88.33%                    | 86.50%(3 agent)               |
 
 
@@ -119,3 +146,20 @@ Better than all models self-consistency results.
 | Ministral-8B-Instruct-2410 (CoT)   | 87.38%       | 90.61%                     | 90.15%                     |
 
 Stronger model (better baseline performence) get better results by consulting the references answers from two weaker model
+
+#### Difficulty level break down
+Qwen2.5-7B-Instruct:
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 99.26        | 96.0         | 89.71        | 86.18        | 80.0         |
+| 1     | 99.26        | 94.4         | 94.12        | 88.62        | 76.92        |
+| 2     | 98.53        | 96.0         | 93.38        | 88.62        | 80.0         |
+
+Llama-3.1-8B-Instruct
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 97.06        | 92.0         | 88.24        | 88.62        | 70.77        |
+| 1     | 99.26        | 94.4         | 92.65        | 88.62        | 79.23        |
+| 2     | 99.26        | 95.2         | 94.85        | 88.62        | 78.46        |
