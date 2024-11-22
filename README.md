@@ -67,6 +67,56 @@ A simple way to test accuracy is to randomly select 100 questions from the datas
 | Majority Vote          | 48.00%                           |
 
 ## Contributions Log
+- Week of 11/11 and 11/18 - Initial implementaton of deliberation on the chain of thought, but running into prompting issues. For example, looking at outputs models seem to be performing better, but final answers and such arent in the format we want.
 - Week of 11/4. (Keshav and Yihan) Use Tom's suggestions to use SOTA LLMs to rerun baseline experiments with gemini-1.0-pro. Found, best of n: 83.29% multiple round: 85.90. Challenges, free API limits, and costs for other LLMs.
 - Week of 10/28. (Keshav) Wrote the code for best of n, and debate with deliberation used in midterm presentation.
 
+## Results
+
+Self consistency using 3 agents
+
+CoT: Chain of Thought. Just add "Step-by-step" in the promtps.
+
+Result in () is on the full test set (1319). The default is 650.
+
+| Model                         | one model     | best of n         | self-consistency (2 round) | self-consistency (3 round) |
+|-------------------------------|-------------- | ----------------- | -------------------------- |----------------------------|
+| Gemini Pro 1.0 (600)          | 77.82%        | 84.24%            | 84.63%                     | 85.40%                     |
+| Qwen2.5-7B-Instruct           | 90.77%(91.28%)| 90.77%(91.28%)    | 91.08%(91.43%)             | 91.23%(91.58%)             |
+| Llama-3.1-8B-Instruct         | 85.38%(85.97%)| 85.38%(86.13%)    | 85.69%(86.50%)             | 85.69%(86.50%)             |
+| Phi-3-small-8k-instruct       | 89.61%        | 89.61%            | 89.31%                     | 89.61%                     |
+| Qwen2.5-7B-Instruct (CoT)     | 90.31%        | 90.31%            | 91.08%                     | 90.92%                     |
+| Llama-3.1-8B-Instruct (CoT)   | 87.38%        | 87.38%            | 88.15%                     | 87.69%                     |
+
+The bare Qwen2.5-7B-Instruct's performence is questionable. This model will generate answer using CoT automatically (without prompt engineering)
+
+2 model consistency 
+
+| Model agent/reference         | Qwen2.5-7B-Instruct       | Llama-3.1-8B-Instruct         |
+|-------------------------------|---------------------------| ------------------------------|
+| Qwen2.5-7B-Instruct           | 91.43%(3 agent)           | 89.08%                        |
+| Llama-3.1-8B-Instruct         | 88.33%                    | 86.50%(3 agent)               |
+
+
+2 model consistency (CoT)
+
+| Model agent/reference         | Qwen2.5-7B-Instruct       | Llama-3.1-8B-Instruct         |
+|-------------------------------|---------------------------| ------------------------------|
+| Qwen2.5-7B-Instruct           | 91.08%(3 agent)           | 85.00%                        |
+| Llama-3.1-8B-Instruct         | 90.62%                    | 88.15%(3 agent)               |
+
+With good reference thought process, model gets better performence.
+
+3 model consistency 
+
+Overall: 91.38%, 91.69%, 91.23%
+
+Better than all models self-consistency results.
+
+| Model                              | base (noref) | reference 2other (2 round) | reference 2other (3 round) |
+|------------------------------------| -------------| -------------------------- |----------------------------|
+| Qwen2.5-7B-Instruct (CoT)          | 90.31%       | 90.77%                     | 91.38%                     |
+| Llama-3.1-8B-Instruct (CoT)        | 87.38%       | 90.92%                     | 91.38%                     |
+| Ministral-8B-Instruct-2410 (CoT)   | 87.38%       | 90.61%                     | 90.15%                     |
+
+Stronger model (better baseline performence) get better results by consulting the references answers from two weaker model

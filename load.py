@@ -18,8 +18,7 @@ def load_sft_dataset(sargs):
     if not sargs.is_easy_to_hard:
         dataset = load_dataset(
             dataset_config[0],
-            name=dataset_config[1],
-            cache_dir="./cache",
+            name=dataset_config[1]
         )
         train_dataset, eval_dataset = (
             dataset[dataset_config[2][0]],
