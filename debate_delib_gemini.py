@@ -6,7 +6,7 @@ import argparse
 from datasets import load_dataset
 
 # Configure the Gemini API
-genai.configure(api_key="AIzaSyC_I6q-nSx-9d-YHfwEg4AqabogZzVfap8")
+genai.configure(api_key="API_KEY)
 model = genai.GenerativeModel("gemini-1.0-pro")
 random.seed(0)
 
