@@ -164,3 +164,24 @@ Llama-3.1-8B-Instruct
 | 0     | 97.06        | 92.0         | 88.24        | 88.62        | 70.77        |
 | 1     | 99.26        | 94.4         | 92.65        | 88.62        | 79.23        |
 | 2     | 99.26        | 95.2         | 94.85        | 88.62        | 78.46        |
+
+Ministral-8B-Instruct-2410
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 97.06        | 92.8         | 88.97        | 82.93        | 74.62        |
+| 1     | 97.79        | 97.6         | 93.38        | 85.37        | 78.46        |
+| 2     | 98.53        | 95.2         | 91.91        | 85.37        | 79.23        |
+
+#### Upper bound for 3 models
+
+Union of the answers from 3 models 
+
+accuracy: 95.08
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 100.0        | 99.2         | 95.59        | 94.31        | 86.15        |
+
+#### 3 model communication include self answer
+
