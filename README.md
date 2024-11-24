@@ -177,11 +177,13 @@ Ministral-8B-Instruct-2410
 
 Union of the answers from 3 models 
 
-accuracy: 95.08
+accuracy: 95.08, 93.54, 92.46
 
 | Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
 |-------|--------------|--------------|--------------|--------------|--------------|
 | 0     | 100.0        | 99.2         | 95.59        | 94.31        | 86.15        |
+| 1     | 99.26        | 98.4         | 96.32        | 90.24        | 83.08        |
+| 2     | 99.26        | 96.0         | 94.85        | 89.43        | 82.31        |
 
 #### 3 model communication include self answer
 
