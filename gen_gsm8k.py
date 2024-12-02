@@ -41,18 +41,112 @@ def construct_student_message(agents, question, idx):
     return {"role": "user", "content": prefix_string}
 
 def construct_score_message(agents, question, idx):
-    prefix_string = "These are the solutions to the problem from some agents: "
+    prefix_string = "These are the answers to the problem from some agents: "
 
     for agent in agents:
         agent_response = agent[idx]["content"]
-        response = "\n\n One agent solution: ```{}```".format(agent_response)
+        response = "\n\n One agent answers: ```{}```".format(agent_response)
 
         prefix_string = prefix_string + response
 
-    prefix_string = prefix_string + """\n\n Distribute 100 points to the solutions from agents based on the accuracy. \n The original math problem is {}. Your final answer should be 3 numerical number, in the form \\boxed{{solution 1 points}}, \\boxed{{solution 2 points}}, \\boxed{{solution 3 points}}, at the end of your response.""".format(
-        question)
+    prefix_string = prefix_string + \
+        """
+        You are tasked with distributing 100 points among three answers provided by agents based on their accuracy in solving a given math problem. Assign points such that:
+        1. The most accurate answer gets the highest points.
+        2. Less accurate answers get proportionally fewer points.
+        3. Answers with same final results get same points.
+        4. The total must always equal 100 points.
+
+        **Output strictly in the following format:**
+        \\boxed{{answer 1 points, answer 2 points, answer 3 points}}
+
+        - Explain the points distribution step by step.
+        - Do not include any additional formatting such as brackets, labels, or line breaks.
+        - Your final response must only consist of the three numerical values in the specified format.
+
+        The original math problem is {}. Provide your distribution plan in the exact format described.
+        """.format(question)
     return {"role": "user", "content": prefix_string}
 
+def construct_score_message_v3(agents, question, idx):
+    prefix_string = "The original math problem is: {}\n\n".format(question) + \
+        "Below are responses from different agents to a math problem:\n\n"
+
+    for agent in agents:
+        agent_response = agent[idx]["content"]
+        prefix_string += f"Agent {i}'s response: ```{agent_response}```\n\n"
+
+    prefix_string += (
+        "You have 100 points to distribute among these answers based on their accuracy in solving the problem. "
+        "Your goal is to accurately assess the correctness of each answer step by step and allocate points accordingly.\n\n"
+        "**Rules to Follow Strictly:**\n"
+        "1. The most accurate answer must get the highest points.\n"
+        "2. Less accurate answers should get proportionally fewer points.\n"
+        "3. If two or more answers provide the same result, they must receive the same points.\n"
+        "4. The total of your points must always equal exactly 100.\n\n"
+        "**Instructions:**\n"
+        "- First, you must briefly and logically explain your points distribution.\n"
+        "- Then, present your final result on a single line in the exact format: \\boxed{{points_for_agent_1, points_for_agent_2, points_for_agent_3}}.\n"
+        "- Ensure your final result adheres to the format precisely.\n"
+    )
+
+    return {"role": "user", "content": prefix_string}
+
+def construct_score_message_v5(agents, question, idx):
+    prefix_string = "The original math problem is: {}\n\n".format(question) + \
+        "Below are responses from different agents to a math problem:\n\n"
+
+    for agent in agents:
+        agent_response = agent[idx]["content"]
+        prefix_string += f"Agent {i}'s response: ```{agent_response}```\n\n"
+
+    prefix_string += (
+        "You have 100 points to distribute among these answers based on their accuracy in solving the problem. "
+        "Your goal is to accurately assess the correctness of each answer step by step and allocate points accordingly.\n\n"
+        "**Rules to Follow Strictly:**\n"
+        "1. The most accurate answer must get the highest points.\n"
+        "2. Less accurate answers should get proportionally fewer points.\n"
+        "3. If two or more answers provide the same result, they must receive the same points.\n"
+        "4. The total of your points must always equal exactly 100.\n\n"
+        "**Instructions:**\n"
+        "- First, you must briefly and logically explain your points distribution.\n"
+        "- Then, present your final result on a single line in the exact format: \\boxed{{points_for_agent_1, points_for_agent_2, points_for_agent_3}}.\n"
+        "- Ensure your final result adheres to the format precisely.\n"
+    )
+
+    return {"role": "user", "content": prefix_string}
+
+def construct_score_message_v4(agents, question, idx):
+    prefix_string = (
+        "The original math problem is: {}\n\n".format(question) +
+        "Below are responses from different agents to the math problem:\n\n"
+    )
+
+    for i, agent in enumerate(agents, 1):
+        agent_response = agent[idx]["content"]
+        prefix_string += f"Agent {i}'s response: ```{agent_response}```\n\n"
+
+    prefix_string += (
+        "You have a total of 100 points to distribute among these answers based on their accuracy and quality in solving the problem. "
+        "Your goal is to evaluate each response fairly and allocate points proportionally.\n\n"
+        "**Evaluation Criteria:**\n"
+        "- **Final Answer Accuracy**: Correctness of the final answer.\n"
+        "- **Methodology Correctness**: Validity and appropriateness of the steps taken.\n"
+        "- **Clarity and Logical Presentation**: How clearly and logically the solution is presented.\n\n"
+        "**Rules to Follow Strictly:**\n"
+        "1. Distribute the 100 points among the agents based on how well each response meets the evaluation criteria.\n"
+        "2. The best answer should receive the highest number of points.\n"
+        "3. Less accurate or lower-quality answers should receive proportionally fewer points.\n"
+        "4. If two or more answers are equally good, they must receive the same number of points.\n"
+        "5. The total points allocated must sum to exactly 100.\n\n"
+        "**Instructions:**\n"
+        "- **First**, briefly and logically explain the points distribution for each agent's response based on the evaluation criteria.\n"
+        "- **Then**, present your final result on a single line in the exact format: \\boxed{points_for_agent_1, points_for_agent_2, points_for_agent_3}.\n"
+        "- **Do Not Include** any other text, labels, or formatting outside the explanation.\n"
+        "- **Ensure** your final result corresponds to the agents in the order presented and adheres to the format precisely.\n"
+    )
+
+    return {"role": "user", "content": prefix_string}
 
 def construct_assistant_message(completion):
     return {"role": "model", "content": completion}
@@ -87,8 +181,7 @@ def generate_chat_response(model, tokenizer, agent_context, device):
             **input_ids,
             max_new_tokens=1024,  
             num_beams=5,         
-            do_sample=True,
-            repetition_penalty=1.2,
+            repetition_penalty=1.3,
             pad_token_id=tokenizer.eos_token_id
         )
 
@@ -156,7 +249,8 @@ if __name__ == "__main__":
                         agent_contexts_other = agent_contexts
                     else:
                         agent_contexts_other = agent_contexts[:i] + agent_contexts[i + 1:]
-                    message = construct_message(agent_contexts_other, question, 2 * round - 1)
+                    # message = construct_message(agent_contexts_other, question, 2 * round - 1)
+                    message = construct_score_message_v5(agent_contexts_other, question, 2 * round - 1)
                     agent_context.append(message)
 
                 model, tokenizer = models_tokenizers[i]
@@ -176,7 +270,7 @@ if __name__ == "__main__":
 
 
         generated_description[question] = (agent_contexts, answer)
-        break
+        # break
     # print(generated_description)
-    json.dump(generated_description, open("gsm_multi_self_nohistory_{}_{}_CoT_650.json".format(agents, rounds), "w"))
+    json.dump(generated_description, open("gsm_multi_score_v5_{}_{}_CoT_650.json".format(agents, rounds), "w"))
 
