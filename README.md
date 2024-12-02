@@ -87,6 +87,7 @@ Result in () is on the full test set (1319). The default is 650.
 | Phi-3-small-8k-instruct       | 89.61%        | 89.61%            | 89.31%                     | 89.61%                     |
 | Qwen2.5-7B-Instruct (CoT)     | 90.31%        | 90.31%            | 91.08%                     | 90.92%                     |
 | Llama-3.1-8B-Instruct (CoT)   | 87.38%        | 87.38%            | 88.15%                     | 87.69%                     |
+| Ministral-8B-Instruct (CoT)   | 90.00%        | 90.00%            | 90.00%                     | 90.15%                     |
 
 The bare Qwen2.5-7B-Instruct's performence is questionable. This model will generate answer using CoT automatically (without prompt engineering)
 
@@ -114,6 +115,14 @@ Llama-3.1-8B-Instruct (CoT)
 | 0     | 97.06        | 92.8         | 88.97        | 86.99        | 70.77        |
 | 1     | 97.79        | 92.0         | 88.97        | 89.43        | 72.31        |
 | 2     | 97.06        | 91.2         | 89.71        | 88.62        | 71.54        |
+
+Ministral-8B-Instruct (CoT)
+
+| Round | Difficulty 0 | Difficulty 1 | Difficulty 2 | Difficulty 3 | Difficulty 4 |
+|-------|--------------|--------------|--------------|--------------|--------------|
+| 0     | 98.53        | 94.4         | 91.18        | 87.8         | 77.69        |
+| 1     | 98.53        | 94.4         | 91.18        | 87.8         | 77.69        |
+| 2     | 98.53        | 94.4         | 91.18        | 88.62        | 77.69        |
 
 ### Multi model communication
 
