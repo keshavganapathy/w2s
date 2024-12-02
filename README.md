@@ -198,7 +198,7 @@ Overall: 92.15%, 92.46%, 92.15%
 |------------------------------------| -------------| -------------------------- |----------------------------|
 | Qwen2.5-7B-Instruct (CoT)          | 90.77%       | 91.85%                     | 92.46%                     |
 | Llama-3.1-8B-Instruct (CoT)        | 87.85%       | 90.31%                     | 90.46%                     |
-| Ministral-8B-Instruct-2410 (CoT)   | 88.15%       | 90.31%                     | 90.46%                     |
+| Ministral-8B-Instruct-2410 (CoT)   | 88.15%       | 90.62%                     | 90.77%                     |
 
 Qwen2.5-7B-Instruct (CoT)
 
@@ -224,7 +224,15 @@ Ministral-8B-Instruct-2410 (CoT)
 | 1     | 99.26        | 95.2         | 91.91        | 89.43        | 75.38        |
 | 2     | 99.26        | 95.2         | 92.65        | 90.24        | 74.62        |
 
+#### 3 model communication include self answer with history
 
+Discard the chat history for short context to let the model focus on neccessary part.
+
+| Model                              | base (noref) | reference self+other (2 r) | reference self+other (3 r) |
+|------------------------------------| -------------| -------------------------- |----------------------------|
+| Qwen2.5-7B-Instruct (CoT)          | 90.92%       | 92.00%                     | 92.00%                     |
+| Llama-3.1-8B-Instruct (CoT)        | 87.69%       | 90.77%                     | 91.08%                     |
+| Ministral-8B-Instruct-2410 (CoT)   | 86.77%       | 90.62%                     | 91.54%                     |
 
 
 
